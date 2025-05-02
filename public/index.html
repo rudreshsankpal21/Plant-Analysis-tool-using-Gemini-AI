@@ -338,6 +338,18 @@
       });
 
       //Download pdf logic
+      downloadButton.addEventListener("click", async (e) => {
+        const response = fetch("/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            result: analysisResult,
+            image: analysisImage,
+          }),
+        });
+      });
     </script>
   </body>
 </html>

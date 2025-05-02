@@ -66,12 +66,14 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 });
 // download route
 app.post("/download", express.json(), async (req, res) => {
-  const reportdir = path.join(__dirname, "reports");
-  await fsPromises.mkdir(reportdir, { recursive: true });
-
-  //Generate PDF
   const { result, image } = req.body;
+
   try {
+    //Ensure the reports directory exists
+    const reportdir = path.join(__dirname, "reports");
+    await fsPromises.mkdir(reportdir, { recursive: true });
+
+    //Generate PDF
     const filename = `plant_analysis_report${Date.now()}.pdf`;
     const filepath = path.join(reportdir, filename);
     const writeStream = fs.createWriteStream(filepath);
@@ -88,6 +90,7 @@ app.post("/download", express.json(), async (req, res) => {
     // Insert image to PDF
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, "base64");
+    doc.moveDown();
     doc.image(buffer, {
       fit: [500, 300],
       align: "center",
