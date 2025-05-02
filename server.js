@@ -22,6 +22,10 @@ app.use(express.static("public"));
 // Gemini AI init
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+app.get("/",(req,res)=>{
+  res.render(index);
+});
+
 // Analyze Route
 app.post("/analyze", upload.single("image"), async (req, res) => {
   const file = req.file;
