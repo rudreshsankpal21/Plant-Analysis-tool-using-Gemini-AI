@@ -23,7 +23,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
   const file = req.file;
   try {
     if (!file) {
-      res.status(500).send("Upload a image");
+      return res.status(400).send("Upload a image");
     }
 
     // configure image path and read it
@@ -60,7 +60,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
       image: `data:${req.file.mimetype};base64,${ImageData}`,
     });
   } catch (error) {
-    res.json(error);
+    res.status(500).json(error);
   }
 });
 // download route

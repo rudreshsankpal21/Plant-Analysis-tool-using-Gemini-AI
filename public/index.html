@@ -282,7 +282,7 @@
       });
 
       // change event
-      dropArea.addEventListener("change", (e) => {
+      imageInput.addEventListener("change", (e) => {
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith("image/")) {
           imageInput.files = e.dataTransfer.files;
@@ -302,8 +302,8 @@
 
       // UploadForm logic
       uploadForm.addEventListener("submit", async (e) => {
-        const formData = new FormData();
         e.preventDefault();
+        const formData = new FormData(e.target);
         loadingDiv.style.display = "block";
         resultDiv.style.display = "none";
         resultDiv.textContent = "";
@@ -315,13 +315,25 @@
             body: formData,
           });
           // Getting actual data
-          const data = response.json();
+          const data = await response.json();
           if (data.result) {
             analysisResult = data.result;
             analysisImage = data.image;
+            resultDiv.innerHTML =
+              "<h3>Analysis Result:</h3><p>" +
+              analysisResult.replace(/\n/g, "<br>") +
+              "</p>";
+            resultDiv.style.display = "block";
+            downloadButton.style.display = "block";
+          } else {
+            resultDiv.textContent = data.error;
+            resultDiv.style.display = "block";
           }
         } catch (error) {
-          console.log(error);
+          resultDiv.textContent = "Error" + error.message;
+          resultDiv.style.display = "block";
+        } finally {
+          loadingDiv.style.display = "none";
         }
       });
     </script>
