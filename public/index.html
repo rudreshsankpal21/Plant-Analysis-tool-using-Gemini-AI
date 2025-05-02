@@ -336,6 +336,32 @@
           loadingDiv.style.display = "none";
         }
       });
+
+      //Download pdf logic
+      downloadButton.addEventListener("click", async (e) => {
+        const response = await fetch("/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            result: analysisResult,
+            image: analysisImage,
+          }),
+        });
+        if (response.ok) {
+          const blob = await response.blob();
+          const URL = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = URL;
+          a.download = "Plant_Analysis_Report.pdf";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        } else {
+          alert("Failed to generate and download the PDF report.");
+        }
+      });
     </script>
   </body>
 </html>
