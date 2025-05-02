@@ -109,7 +109,12 @@ app.post("/download", express.json(), async (req, res) => {
     });
 
     fsPromises.unlink(filepath);
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error generating PDF report", error);
+    res
+      .status(500)
+      .json({ error: "An error occured while generating the PDF report" });
+  }
 });
 
 //Starting the server
