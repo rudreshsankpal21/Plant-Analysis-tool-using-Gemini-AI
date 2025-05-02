@@ -251,6 +251,54 @@
       const dropArea = document.getElementById("dropArea");
       let analysisResult = "";
       let analysisImage = "";
+
+      //Handling Drop events
+
+      // click event
+      dropArea.addEventListener("click", (e) => {
+        imageInput.click();
+      });
+
+      // dragover event
+      dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.style.backgroundColor = "#e8f4fd";
+      });
+
+      // dragLeave event
+      dropArea.addEventListener("dragleave", (e) => {
+        dropArea.style.backgroundColor = "";
+      });
+
+      // drop event
+      dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropArea.style.backgroundColor = "";
+        const file = e.dataTransfer.files[0]; // Accessing the first index of img
+        if (file && file.type.startsWith("image/")) {
+          imageInput.files = e.dataTransfer.files;
+        }
+        handleUpload(file);
+      });
+
+      // change event
+      dropArea.addEventListener("change", (e) => {
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+          imageInput.files = e.dataTransfer.files;
+        }
+        handleUpload(file);
+      });
+
+      //HandleUpload function
+      function handleUpload(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
     </script>
   </body>
 </html>
