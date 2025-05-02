@@ -7,6 +7,7 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 const port = process.env.PORT || 5000;
 const { GoogleGenerativeAI } = require("@google/generative-ai"); // for accessing with gemini ai
+const { error } = require("console");
 const app = express();
 
 // Configuring multer
@@ -85,6 +86,29 @@ app.post("/download", express.json(), async (req, res) => {
     doc.fontSize(14).text(result, { align: "left" });
 
     // Insert image to PDF
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+    doc.image(buffer, {
+      fit: [500, 300],
+      align: "center",
+      valign: "center",
+    });
+    doc.end();
+
+    //Wait for pdf to be created
+    await new Promise((resolve, reject) => {
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+
+    //Send the pdf
+    res.download(filepath, (err) => {
+      if (err) {
+        res.status(500).json({ error: "Error downloading the PDF report" });
+      }
+    });
+
+    fsPromises.unlink(filepath);
   } catch (error) {}
 });
 
