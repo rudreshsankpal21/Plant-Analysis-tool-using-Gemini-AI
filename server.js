@@ -64,8 +64,28 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
   }
 });
 // download route
-app.post("/download", async (req, res) => {
-  res.json({ success: true });
+app.post("/download", express.json(), async (req, res) => {
+  const reportdir = path.join(__dirname, "reports");
+  await fsPromises.mkdir(reportdir, { recursive: true });
+
+  //Generate PDF
+  const { result, image } = req.body;
+  try {
+    const filename = `plant_analysis_report${Date.now()}.pdf`;
+    const filepath = path.join(reportdir, filename);
+    const writeStream = fs.createWriteStream(filepath);
+    const doc = new pdfkit();
+    doc.pipe(writeStream);
+
+    // Add content to pdf
+    doc.fontSize(24).text("Plant Analysis Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(24).text(`Date:${new Date().toLocaleDateString()}`);
+    doc.moveDown();
+    doc.fontSize(14).text(result, { align: "left" });
+
+    // Insert image to PDF
+  } catch (error) {}
 });
 
 //Starting the server
