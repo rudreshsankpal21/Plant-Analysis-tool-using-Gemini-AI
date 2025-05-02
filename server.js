@@ -25,6 +25,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     if (!file) {
       res.status(500).send("Upload a image");
     }
+
     // configure image path and read it
     const imagePath = req.file.path;
     const ImageData = await fsPromises.readFile(imagePath, {
@@ -35,6 +36,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
     });
+
     // Make request
     const result = await model.generateContent([
       "Analyze this plant image & provide detailed analysis of its species,health,& core recommendations,its characteristics,core instructions,and any interesting factor.Please provide the response in the plain text without using any markdown formatting",
@@ -45,10 +47,13 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
         },
       },
     ]);
+
     // Response in plain text
     const plantInfo = result.response.text();
+
     // Remove the uploaded img
     const deleteImg = await fsPromises.unlink(imagePath);
+
     //Send the response
     res.json({
       result: plantInfo,
@@ -62,6 +67,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 app.post("/download", async (req, res) => {
   res.json({ success: true });
 });
+
 //Starting the server
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
